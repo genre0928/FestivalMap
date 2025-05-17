@@ -8,10 +8,11 @@ import type { IApi, Iitems } from "../api";
 import { useState } from "react";
 
 interface TableProps {
-  data : IApi
+  data: IApi;
+  onRowHover: (fstName: string | null) => void;
 }
 
-function Table({data}: TableProps) {
+function Table({ data, onRowHover }: TableProps) {
   if (!data) return;
   const items = data.response.body.items;
   const today = new Date().getTime();
@@ -49,13 +50,21 @@ function Table({data}: TableProps) {
   });
 
   return (
-    <div>
-      <table>
-        <thead>
+    <div className="relative overflow-x-auto">
+      <table
+        className="w-full text-sm text-left text-spring bg-bg-spring"
+        style={{ width: "100%" }}
+      >
+        <thead className="text-xl">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  scope="col"
+                  className="px-6 py-3"
+                  key={header.id}
+                  style={{ width: `${header.getSize()}px` }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -69,9 +78,18 @@ function Table({data}: TableProps) {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              className=" border-b  border-gray-200 cursor-pointer"
+              onMouseEnter={() => onRowHover(row.original.fstvlNm)}
+              onMouseLeave={() => onRowHover(null)}
+              key={row.id}
+            >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td
+                  className="px-6 py-3"
+                  key={cell.id}
+                  style={{ width: `${cell.column.getSize()}px` }}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
